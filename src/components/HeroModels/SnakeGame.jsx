@@ -1,102 +1,94 @@
-import React, { useEffect, useRef } from "react";
+// src/components/HeroModels/SnakeGame.jsx
+import React, { useEffect, useRef } from 'react';
 
-const SnakeGame = () => {
+// Základní styly (můžeš je mít v CSS souboru)
+const gameContainerStyle = {
+    width: '400px',
+    height: '225px', // Výška monitoru v pixelech (přizpůsob) - poměr 16:9
+    backgroundColor: '#000', // Černé pozadí pro hru
+    border: '1px solid #333',
+    borderRadius: '4px',
+    position: 'relative', // Pro absolutní pozicování tlačítka
+    overflow: 'hidden', // Skryje cokoliv mimo
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'monospace',
+    color: 'lime', // Klasická barva hada :)
+};
+
+const closeButtonStyle = {
+    position: 'absolute',
+    top: '5px',
+    right: '5px',
+    padding: '2px 5px',
+    backgroundColor: 'rgba(255, 0, 0, 0.7)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '3px',
+    cursor: 'pointer',
+    fontSize: '10px',
+    zIndex: 10, // Aby bylo nad hrou
+};
+
+const SnakeGame = ({ onClose }) => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
 
-        // Inicializace hry Snake
-        let snake = [{ x: 10, y: 10 }];
-        let direction = { x: 0, y: 0 };
-        let food = { x: 15, y: 15 };
-        const gridSize = 20;
-        const tileSize = canvas.width / gridSize;
+        ctx.font = '16px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('Snake Game Loading...', canvas.width / 2, canvas.height / 2);
 
-        const drawGame = () => {
-            // Vyčištění plátna
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let x = 10;
+        let y = 10;
+        let dx = 2;
+        let dy = 2;
 
-            // Nakreslení jídla
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
-
-            // Nakreslení hada
-            ctx.fillStyle = "lime";
-            snake.forEach((segment) => {
-                ctx.fillRect(segment.x * tileSize, segment.y * tileSize, tileSize, tileSize);
-            });
-
-            // Pohyb hada
-            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            snake.unshift(head);
-
-            // Kontrola kolize s jídlem
-            if (head.x === food.x && head.y === food.y) {
-                food = { x: Math.floor(Math.random() * gridSize), y: Math.floor(Math.random() * gridSize) };
-            } else {
-                snake.pop();
-            }
-
-            // Kontrola kolize s hranami nebo tělem
-            if (
-                head.x < 0 ||
-                head.y < 0 ||
-                head.x >= gridSize ||
-                head.y >= gridSize ||
-                snake.slice(1).some((segment) => segment.x === head.x && segment.y === head.y)
-            ) {
-                // Restart hry
-                snake = [{ x: 10, y: 10 }];
-                direction = { x: 0, y: 0 };
-            }
+        const draw = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'lime';
+            ctx.fillRect(x, y, 10, 10);
+            x += dx;
+            y += dy;
+            if (x + 10 > canvas.width || x < 0) dx *= -1;
+            if (y + 10 > canvas.height || y < 0) dy *= -1;
         };
-
-        const handleKeyDown = (event) => {
-            switch (event.key) {
-                case "ArrowUp":
-                    if (direction.y === 0) direction = { x: 0, y: -1 };
-                    break;
-                case "ArrowDown":
-                    if (direction.y === 0) direction = { x: 0, y: 1 };
-                    break;
-                case "ArrowLeft":
-                    if (direction.x === 0) direction = { x: -1, y: 0 };
-                    break;
-                case "ArrowRight":
-                    if (direction.x === 0) direction = { x: 1, y: 0 };
-                    break;
-                default:
-                    break;
-            }
-        };
-
-        window.addEventListener("keydown", handleKeyDown);
-
-        const gameInterval = setInterval(drawGame, 100);
 
         return () => {
-            clearInterval(gameInterval);
-            window.removeEventListener("keydown", handleKeyDown);
+            console.log("Snake game cleanup");
         };
     }, []);
 
-    return (
-        <canvas
-            ref={canvasRef}
-            width={400}
-            height={400}
-            style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                border: "2px solid white",
-            }}
-        ></canvas>
-    );
-};
+        return (
+            <div style={gameContainerStyle}>
+                {/* Tlačítko pro zavření */}
+                <button style={closeButtonStyle} onClick={onClose}>
+                    X
+                </button>
 
-export default SnakeGame;
+                {/* Canvas pro vykreslení hry */}
+                {/* Rozměry canvasu by měly odpovídat gameContainerStyle */}
+                <canvas
+                    ref={canvasRef}
+                    width="400"
+                    height="225"
+                    style={{ display: 'block' }} // Odstraní případné mezery pod canvasem
+                >
+                    Your browser does not support the canvas element.
+                </canvas>
+
+                {/* Nebo pokud tvá hra používá divy místo canvasu: */}
+                {/* <div id="snake-game-area" style={{ width: '100%', height: '100%' }}> */}
+                {/*   ... obsah hry ... */}
+                {/* </div> */}
+            </div>
+        );
+    };
+
+
+
+    export default SnakeGame;
