@@ -470,3 +470,12 @@ section {
 .card:hover::before {
     opacity: 1;
 }
+
+
+
+.snake-game-html-wrapper canvas {
+    /* Zajistí, že canvas vyplní div */
+    display: block;
+    width: 100%;
+    height: 100%;
+}

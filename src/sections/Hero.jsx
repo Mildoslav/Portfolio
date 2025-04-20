@@ -55,11 +55,6 @@ const Hero = () => {
                 <figure>
                     <div className="hero-3d-layout">
                         <HeroExperience />
-                        <Button
-                            className="md:w-80 md:h-16 w-60 h-12 absolute bottom-0 right-80"
-                            id="playButton"
-                            text="Play"
-                        />
                     </div>
                 </figure>
             </div>
